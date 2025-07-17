@@ -40,9 +40,9 @@ export const AuthForm: React.FC = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-600 rounded-2xl mb-4">
               <BookOpen className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">My Journal</h1>
+            <h1 className="text-2xl font-bold text-gray-900">DayScribe</h1>
             <p className="text-gray-600 mt-2">
-              {isLogin ? 'Welcome back!' : 'Start your journaling journey'}
+              {isLogin ? 'Welcome back ! \n Start your journaling journey today' : 'Start your journaling journey'}
             </p>
           </div>
 
