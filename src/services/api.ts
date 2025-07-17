@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8080/journal';
+const API_BASE_URL = 'https://journal-app-backend-springboot-obkk.onrender.com/journal';
 //http://localhost:8080/journal
 //https://journal-app-backend-springboot-obkk.onrender.com/journal
 
