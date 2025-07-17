@@ -2,6 +2,9 @@
 
 This is the **frontend** for the [Journal App Backend](https://github.com/pritam-purkait/journal-app-backend-springboot.git), a personal journaling platform built using **Spring Boot** for the backend. This frontend was initially generated using **AI assistance** to rapidly prototype the user interface and connect it with the backend API. It has since been **modified and extended** with custom features and logic by me.
 
+## Live link
+
+[link](https://journal-app-frontend-seven.vercel.app/)
 ---
 
 ## 🌐 Overview
