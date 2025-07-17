@@ -132,7 +132,7 @@ function JournalApp() {
                 <BookOpen className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Journal</h1>
+                <h1 className="text-3xl font-bold text-gray-900">DayScribe</h1>
                 <p className="text-gray-600">Your personal space for thoughts and reflections</p>
               </div>
             </div>
