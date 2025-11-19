@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, BookOpen, Calendar, TrendingUp, LogOut, Moon, Sun } from 'lucide-react';
+import { Plus, BookOpen, Calendar, TrendingUp, LogOut, Moon, Sun, User } from 'lucide-react';
 import { JournalEntry, JournalFormData } from './types/journal';
 import { JournalForm } from './components/JournalForm';
 import { JournalList } from './components/JournalList';
 import { SearchBar } from './components/SearchBar';
 import { AuthForm } from './components/AuthForm';
 import { JournalModal } from './components/JournalModal';
+import { ProfileModal } from './components/ProfileModal';
 import { AuthProvider, useAuth } from './hooks/useAuth.tsx';
 import { DarkModeProvider, useDarkMode } from './hooks/useDarkMode';
 import { apiService } from './services/api';
@@ -21,6 +22,8 @@ function JournalApp() {
   const [error, setError] = useState<string | null>(null);
   const [greeting, setGreeting] = useState<string>('');
   const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
+  const [showProfile, setShowProfile] = useState(false);
+  const [currentUserName, setCurrentUserName] = useState<string>('');
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -55,6 +58,11 @@ function JournalApp() {
     try {
       const greetingText = await apiService.getUserGreeting();
       setGreeting(greetingText);
+      const token = localStorage.getItem('jwt_token');
+      if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setCurrentUserName(payload.sub || '');
+      }
     } catch (err) {
       console.error('Failed to load greeting:', err);
     }
@@ -105,6 +113,21 @@ function JournalApp() {
     }
   };
 
+  const handleUpdateProfile = async (userData: { userName: string; password: string }) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await apiService.updateUser(userData);
+      setShowProfile(false);
+      setCurrentUserName(userData.userName);
+      await loadGreeting();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredEntries = entries.filter(entry =>
     entry.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     entry.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -150,6 +173,12 @@ function JournalApp() {
               >
                 <Plus className="h-5 w-5" />
                 New Entry
+              </button>
+              <button
+                onClick={() => setShowProfile(true)}
+                className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+              >
+                <User className="h-4 w-4" />
               </button>
               <button
                 onClick={toggle}
@@ -258,6 +287,15 @@ function JournalApp() {
             onClose={() => setSelectedEntry(null)}
             onEdit={handleEdit}
             onDelete={handleDelete}
+          />
+        )}
+
+        {/* Profile Modal */}
+        {showProfile && (
+          <ProfileModal
+            onClose={() => setShowProfile(false)}
+            onUpdate={handleUpdateProfile}
+            currentUserName={currentUserName}
           />
         )}
       </div>
