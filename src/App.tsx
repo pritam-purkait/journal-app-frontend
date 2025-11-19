@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, BookOpen, Calendar, TrendingUp, LogOut, User } from 'lucide-react';
+import { Plus, BookOpen, Calendar, TrendingUp, LogOut, Moon, Sun } from 'lucide-react';
 import { JournalEntry, JournalFormData } from './types/journal';
 import { JournalForm } from './components/JournalForm';
 import { JournalList } from './components/JournalList';
 import { SearchBar } from './components/SearchBar';
 import { AuthForm } from './components/AuthForm';
+import { JournalModal } from './components/JournalModal';
 import { AuthProvider, useAuth } from './hooks/useAuth.tsx';
+import { DarkModeProvider, useDarkMode } from './hooks/useDarkMode';
 import { apiService } from './services/api';
 
 function JournalApp() {
   const { isAuthenticated, logout } = useAuth();
+  const { isDark, toggle } = useDarkMode();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
@@ -17,6 +20,7 @@ function JournalApp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [greeting, setGreeting] = useState<string>('');
+  const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -80,6 +84,7 @@ function JournalApp() {
   };
 
   const handleEdit = (entry: JournalEntry) => {
+    setSelectedEntry(null);
     setEditingEntry(entry);
     setShowForm(true);
   };
@@ -89,6 +94,7 @@ function JournalApp() {
       try {
         setLoading(true);
         setError(null);
+        setSelectedEntry(null);
         await apiService.deleteEntry(id);
         await loadEntries(); // Reload entries
       } catch (err) {
@@ -122,7 +128,7 @@ function JournalApp() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -132,8 +138,8 @@ function JournalApp() {
                 <BookOpen className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">DayScribe</h1>
-                <p className="text-gray-600">Your personal space for thoughts and reflections</p>
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">DayScribe</h1>
+                <p className="text-gray-600 dark:text-gray-300">Your personal space for thoughts and reflections</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -146,8 +152,14 @@ function JournalApp() {
                 New Entry
               </button>
               <button
+                onClick={toggle}
+                className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+              >
+                {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </button>
+              <button
                 onClick={logout}
-                className="flex items-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors duration-200"
+                className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
               >
                 <LogOut className="h-4 w-4" />
               </button>
@@ -156,50 +168,50 @@ function JournalApp() {
 
           {/* Greeting */}
           {greeting && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 mb-6 border border-white/20">
-              <pre className="text-gray-700 whitespace-pre-wrap font-sans">{greeting}</pre>
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 mb-6 border border-white/20 dark:border-gray-700/20">
+              <pre className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">{greeting}</pre>
             </div>
           )}
 
           {/* Error Message */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
-              <p className="text-red-700">{error}</p>
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6">
+              <p className="text-red-700 dark:text-red-400">{error}</p>
             </div>
           )}
 
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/20">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <BookOpen className="h-5 w-5 text-blue-600" />
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <BookOpen className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{totalEntries}</p>
-                  <p className="text-sm text-gray-600">Total Entries</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalEntries}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Total Entries</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/20">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <TrendingUp className="h-5 w-5 text-green-600" />
+                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                  <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{totalWords.toLocaleString()}</p>
-                  <p className="text-sm text-gray-600">Words Written</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalWords.toLocaleString()}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Words Written</p>
                 </div>
               </div>
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-white/20 dark:border-gray-700/20">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <Calendar className="h-5 w-5 text-purple-600" />
+                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                  <Calendar className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{thisMonth}</p>
-                  <p className="text-sm text-gray-600">This Month</p>
+                  <p className="text-2xl font-bold text-gray-900 dark:text-white">{thisMonth}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">This Month</p>
                 </div>
               </div>
             </div>
@@ -213,7 +225,7 @@ function JournalApp() {
         {loading && (
           <div className="text-center py-8">
             <div className="inline-block w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-            <p className="mt-2 text-gray-600">Loading...</p>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Loading...</p>
           </div>
         )}
 
@@ -223,6 +235,7 @@ function JournalApp() {
             entries={filteredEntries}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onEntryClick={setSelectedEntry}
           />
         )}
 
@@ -237,6 +250,16 @@ function JournalApp() {
             initialData={editingEntry}
           />
         )}
+
+        {/* Journal Modal */}
+        {selectedEntry && (
+          <JournalModal
+            entry={selectedEntry}
+            onClose={() => setSelectedEntry(null)}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+        )}
       </div>
     </div>
   );
@@ -244,9 +267,11 @@ function JournalApp() {
 
 function App() {
   return (
-    <AuthProvider>
-      <JournalApp />
-    </AuthProvider>
+    <DarkModeProvider>
+      <AuthProvider>
+        <JournalApp />
+      </AuthProvider>
+    </DarkModeProvider>
   );
 }
 

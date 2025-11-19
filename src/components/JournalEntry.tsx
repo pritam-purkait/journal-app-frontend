@@ -6,6 +6,7 @@ interface JournalEntryProps {
   entry: JournalEntryType;
   onEdit: (entry: JournalEntryType) => void;
   onDelete: (id: string) => void;
+  onClick: (entry: JournalEntryType) => void;
 }
 
 const moodIcons = {
@@ -46,7 +47,8 @@ const getReadingTime = (text: string): number => {
 export const JournalEntry: React.FC<JournalEntryProps> = ({ 
   entry, 
   onEdit, 
-  onDelete 
+  onDelete,
+  onClick
 }) => {
   const wordCount = getWordCount(entry.content);
   const readingTime = getReadingTime(entry.content);
@@ -54,18 +56,18 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({
   const moodColor = entry.sentiment ? moodIcons[entry.sentiment].color : '';
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200">
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer" onClick={() => onClick(entry)}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-xl font-semibold text-gray-900 line-clamp-1">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white line-clamp-1">
               {entry.title}
             </h3>
             {MoodIcon && (
               <MoodIcon className={`h-5 w-5 ${moodColor}`} />
             )}
           </div>
-          <div className="text-sm text-gray-500 flex items-center gap-2">
+          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
             <span>{formatDate(entry.date)}</span>
             <span>•</span>
             <span>{formatTime(entry.date)}</span>
@@ -77,14 +79,14 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={() => onEdit(entry)}
-            className="p-2 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all duration-200"
+            onClick={(e) => { e.stopPropagation(); onEdit(entry); }}
+            className="p-2 text-gray-400 dark:text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-full transition-all duration-200"
           >
             <Edit className="h-4 w-4" />
           </button>
           <button
-            onClick={() => onDelete(entry.id)}
-            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full transition-all duration-200"
+            onClick={(e) => { e.stopPropagation(); onDelete(entry.id); }}
+            className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all duration-200"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -92,14 +94,14 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({
       </div>
 
       <div className="mb-4">
-        <p className="text-gray-700 leading-relaxed line-clamp-3">
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-3">
           {entry.content}
         </p>
       </div>
 
       {entry.sentiment && (
         <div className="flex items-center gap-2">
-          <span className="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm">
+          <span className="px-3 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-full text-sm">
             {entry.sentiment.toLowerCase()}
           </span>
         </div>
