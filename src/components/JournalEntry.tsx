@@ -44,9 +44,9 @@ const getReadingTime = (text: string): number => {
   return Math.ceil(wordCount / wordsPerMinute);
 };
 
-export const JournalEntry: React.FC<JournalEntryProps> = ({ 
-  entry, 
-  onEdit, 
+export const JournalEntry: React.FC<JournalEntryProps> = ({
+  entry,
+  onEdit,
   onDelete,
   onClick
 }) => {
@@ -56,7 +56,7 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({
   const moodColor = entry.sentiment ? moodIcons[entry.sentiment].color : '';
 
   return (
-    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer" onClick={() => onClick(entry)}>
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200 cursor-pointer" onClick={() => onClick(entry)}>
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
@@ -67,14 +67,16 @@ export const JournalEntry: React.FC<JournalEntryProps> = ({
               <MoodIcon className={`h-5 w-5 ${moodColor}`} />
             )}
           </div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-            <span>{formatDate(entry.date)}</span>
-            <span>•</span>
-            <span>{formatTime(entry.date)}</span>
-            <span>•</span>
-            <span>{wordCount} words</span>
-            <span>•</span>
-            <span>{readingTime} min read</span>
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span>{formatDate(entry.date)}</span>
+              <span className="hidden sm:inline">•</span>
+              <span>{formatTime(entry.date)}</span>
+              <span className="hidden sm:inline">•</span>
+              <span>{wordCount} words</span>
+              <span className="hidden sm:inline">•</span>
+              <span>{readingTime} min read</span>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">

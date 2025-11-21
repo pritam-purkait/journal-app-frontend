@@ -158,7 +158,7 @@ function JournalApp() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto px-3 md:px-4 py-6 md:py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
@@ -175,10 +175,10 @@ function JournalApp() {
               <button
                 onClick={() => setShowForm(true)}
                 disabled={loading}
-                className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:bg-gray-400 transition-colors duration-200 shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]"
+                className="flex items-center gap-2 px-4 md:px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:bg-gray-400 transition-colors duration-200 shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]"
               >
                 <Plus className="h-5 w-5" />
-                New Entry
+                <span className="hidden md:inline">New Entry</span>
               </button>
               <button
                 onClick={() => setShowProfile(true)}
