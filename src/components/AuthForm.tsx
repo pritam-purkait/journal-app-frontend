@@ -63,7 +63,7 @@ export const AuthForm: React.FC = () => {
               <strong>Error:</strong> {error}
               <br />
               <small className="text-gray-600 dark:text-gray-400 mt-1 block">
-                Check the browser console for more details
+                {isLogin ? 'User name or password is incorrect !' : 'User name already exists !'}
               </small>
             </div>
           )}
