@@ -13,7 +13,7 @@ import { apiService } from './services/api';
 
 function JournalApp() {
   const { isAuthenticated, logout } = useAuth();
-  const { isDark, toggle } = useDarkMode();
+  const { isDark, toggle, themeBtnRef } = useDarkMode();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
@@ -39,7 +39,7 @@ function JournalApp() {
       const data = await apiService.getAllEntries();
       if (Array.isArray(data)) {
         // Sort by date (newest first)
-        const sortedEntries = data.sort((a, b) => 
+        const sortedEntries = data.sort((a, b) =>
           new Date(b.date).getTime() - new Date(a.date).getTime()
         );
         setEntries(sortedEntries);
@@ -72,7 +72,7 @@ function JournalApp() {
     try {
       setLoading(true);
       setError(null);
-      
+
       if (editingEntry) {
         // Update existing entry
         await apiService.updateEntry(editingEntry.id, formData);
@@ -81,7 +81,7 @@ function JournalApp() {
         // Create new entry
         await apiService.createEntry(formData);
       }
-      
+
       setShowForm(false);
       await loadEntries(); // Reload entries
     } catch (err) {
@@ -119,8 +119,14 @@ function JournalApp() {
       setError(null);
       await apiService.updateUser(userData);
       setShowProfile(false);
-      setCurrentUserName(userData.userName);
-      await loadGreeting();
+
+      if (userData.userName !== currentUserName) {
+        logout();
+        // Optional: You might want to show a message here, but logout usually redirects immediately
+      } else {
+        setCurrentUserName(userData.userName);
+        await loadGreeting();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile');
     } finally {
@@ -139,7 +145,7 @@ function JournalApp() {
     const wordCount = entry.content.trim().split(/\s+/).filter(word => word.length > 0).length;
     return sum + wordCount;
   }, 0);
-  
+
   const thisMonth = entries.filter(entry => {
     const entryDate = new Date(entry.date);
     const now = new Date();
@@ -169,20 +175,22 @@ function JournalApp() {
               <button
                 onClick={() => setShowForm(true)}
                 disabled={loading}
-                className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:bg-gray-400 transition-colors duration-200 shadow-lg hover:shadow-xl"
+                className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:bg-gray-400 transition-colors duration-200 shadow-lg hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]"
               >
                 <Plus className="h-5 w-5" />
                 New Entry
               </button>
               <button
                 onClick={() => setShowProfile(true)}
-                className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200 hover:shadow-lg"
               >
                 <User className="h-4 w-4" />
               </button>
               <button
+                ref={themeBtnRef}
                 onClick={toggle}
-                className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
+                className={`flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-500 ${isDark ? 'hover:shadow-[0_0_15px_rgba(253,224,71,0.3)]' : 'hover:shadow-[0_0_15px_rgba(99,102,241,0.3)]'
+                  }`}
               >
                 {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </button>

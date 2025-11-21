@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { LogIn, UserPlus, BookOpen, Eye, EyeOff } from 'lucide-react';
+import { LogIn, UserPlus, BookOpen, Eye, EyeOff, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useDarkMode } from '../hooks/useDarkMode.tsx';
 
 export const AuthForm: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,6 +14,7 @@ export const AuthForm: React.FC = () => {
   });
 
   const { login, signup, loading, error } = useAuth();
+  const { isDark, toggle, themeBtnRef } = useDarkMode();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +35,17 @@ export const AuthForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4 relative">
+      <button
+        ref={themeBtnRef}
+        onClick={toggle}
+        className={`absolute top-4 right-4 p-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-700 dark:text-gray-300 rounded-full hover:bg-white dark:hover:bg-gray-700 shadow-lg transition-all duration-500 ${isDark ? 'hover:shadow-[0_0_20px_rgba(253,224,71,0.3)]' : 'hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]'
+          }`}
+        aria-label="Toggle theme"
+      >
+        {isDark ? <Sun className="h-6 w-6" /> : <Moon className="h-6 w-6" />}
+      </button>
+
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         <div className="p-8">
           <div className="text-center mb-8">

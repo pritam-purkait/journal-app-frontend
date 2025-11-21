@@ -1,31 +1,25 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext } from 'react';
+import { useModeAnimation, ThemeAnimationType } from 'react-theme-switch-animation';
 
 interface DarkModeContextType {
   isDark: boolean;
   toggle: () => void;
+  themeBtnRef: React.RefObject<HTMLButtonElement>;
 }
 
 const DarkModeContext = createContext<DarkModeContextType | undefined>(undefined);
 
 export function DarkModeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(() => {
-    const saved = localStorage.getItem('darkMode');
-    return saved ? JSON.parse(saved) : false;
+  const { ref, toggleSwitchTheme, isDarkMode } = useModeAnimation({
+    animationType: ThemeAnimationType.BLUR_CIRCLE, // Default animation
   });
 
-  useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(isDark));
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
-
-  const toggle = () => setIsDark(!isDark);
-
   return (
-    <DarkModeContext.Provider value={{ isDark, toggle }}>
+    <DarkModeContext.Provider value={{
+      isDark: isDarkMode,
+      toggle: toggleSwitchTheme,
+      themeBtnRef: ref as React.RefObject<HTMLButtonElement>
+    }}>
       {children}
     </DarkModeContext.Provider>
   );

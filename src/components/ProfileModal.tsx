@@ -10,14 +10,19 @@ interface ProfileModalProps {
 export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose, onUpdate, currentUserName }) => {
   const [formData, setFormData] = useState({
     userName: currentUserName,
-    password: ''
+    password: '',
+    confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
 
+  const isUserNameChanged = formData.userName !== currentUserName;
+  const passwordsMatch = formData.password === formData.confirmPassword;
+  const canSubmit = formData.userName.trim() && formData.password.trim() && passwordsMatch;
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.userName.trim() && formData.password.trim()) {
-      onUpdate(formData);
+    if (canSubmit) {
+      onUpdate({ userName: formData.userName, password: formData.password });
     }
   };
 
@@ -37,6 +42,14 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose, onUpdate, c
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {isUserNameChanged && (
+            <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl">
+              <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                Warning: Changing your username will require you to log in again.
+              </p>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Username
@@ -52,7 +65,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose, onUpdate, c
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              New Password
+              New Password (Required)
             </label>
             <div className="relative">
               <input
@@ -72,6 +85,27 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose, onUpdate, c
               </button>
             </div>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              value={formData.confirmPassword}
+              onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+              placeholder="Confirm new password"
+              className={`w-full px-4 py-3 border ${
+                formData.confirmPassword && !passwordsMatch 
+                  ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
+                  : 'border-gray-200 dark:border-gray-600 focus:ring-emerald-500 focus:border-emerald-500'
+              } bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-xl focus:ring-2 transition-all duration-200`}
+              required
+            />
+            {formData.confirmPassword && !passwordsMatch && (
+              <p className="mt-1 text-sm text-red-500">Passwords do not match</p>
+            )}
+          </div>
         </form>
 
         <div className="p-6 border-t border-gray-100 dark:border-gray-700 flex gap-3">
@@ -84,7 +118,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ onClose, onUpdate, c
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!formData.userName.trim() || !formData.password.trim()}
+            disabled={!canSubmit}
             className="flex-1 px-4 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors duration-200 flex items-center justify-center gap-2"
           >
             <Save className="h-4 w-4" />
